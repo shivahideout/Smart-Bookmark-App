@@ -1,23 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function Dashboard() {
 
-  // ==============================
-  // STEP 1: STATE VARIABLES
-  // ==============================
+
 
   const [session, setSession] = useState<any>(null);
+  const router = useRouter();
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
   const [bookmarks, setBookmarks] = useState<any[]>([]);
 
 
-  // ==============================
-  // STEP 2: GET SESSION
-  // ==============================
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -26,9 +23,7 @@ export default function Dashboard() {
   }, []);
 
 
-  // ==============================
-  // STEP 3: FETCH + REALTIME
-  // ==============================
+
 
   useEffect(() => {
     if (!session) return;
@@ -52,18 +47,18 @@ export default function Dashboard() {
   }, [session]);
 
 
-  // ==============================
-  // STEP 4: FUNCTIONS
-  // ==============================
+ 
 
   const fetchBookmarks = async () => {
     const { data } = await supabase
-      .from("bookmarks")
-      .select("*")
-      .order("created_at", { ascending: false });
+  .from("bookmarks")
+  .select("*")
+  .eq("user_id", session.user.id)
+  .order("created_at", { ascending: false });
 
     setBookmarks(data || []);
   };
+
 
   const addBookmark = async () => {
     if (!title || !url) return;
@@ -84,55 +79,90 @@ export default function Dashboard() {
     await supabase.from("bookmarks").delete().eq("id", id);
   };
 
+  const logout = async () => {
+  await supabase.auth.signOut();
+  router.push("/");
+};
 
-  // ==============================
-  // STEP 5: UI
-  // ==============================
+
 
   if (!session) return <div className="p-10">Loading...</div>;
 
   return (
-    <div className="p-10 space-y-6">
+  <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-800 p-10 text-white">
 
-      <h1 className="text-2xl font-bold">
-        Welcome {session.user.email}
-      </h1>
+    <div className="max-w-3xl mx-auto space-y-8">
 
-      {/* ADD BOOKMARK FORM */}
-      <div className="space-y-2">
+      <div className="flex items-center gap-4">
+  <img
+    src={session.user.user_metadata.avatar_url}
+    alt="profile"
+    className="w-10 h-10 rounded-full"
+  />
+  <h1 className="text-2xl font-bold">
+    {session.user.user_metadata.full_name}
+  </h1> 
+    <button
+    onClick={logout}
+    className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition"
+  >
+    Logout
+  </button>
+</div>
+
+      
+      <div className="bg-gray-900 p-6 rounded-2xl shadow-lg space-y-4">
+        <h2 className="text-lg font-semibold">Add New Bookmark</h2>
+
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Title"
-          className="border p-2 w-full"
+          className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700"
         />
+
         <input
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          placeholder="URL"
-          className="border p-2 w-full"
+          placeholder="https://example.com"
+          className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700"
         />
+
         <button
           onClick={addBookmark}
-          className="bg-blue-500 text-white px-4 py-2"
+          className="bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-lg transition"
         >
           Add Bookmark
         </button>
       </div>
 
-      {/* BOOKMARK LIST */}
-      <div className="mt-6 space-y-2">
+   
+      <div className="space-y-4">
+        {bookmarks.length === 0 && (
+          <p className="text-gray-400">No bookmarks yet...</p>
+        )}
+
         {bookmarks.map((b) => (
           <div
             key={b.id}
-            className="border p-2 flex justify-between"
+            className="bg-gray-900 p-4 rounded-xl flex justify-between items-center shadow-md"
           >
-            <a href={b.url} target="_blank">
+            <a
+              href={
+                b.url.startsWith("http")
+                  ? b.url
+                  : `https://${b.url}`
+              }
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-400 hover:underline"
+            >
               {b.title}
             </a>
+
             <button
               onClick={() => deleteBookmark(b.id)}
-              className="text-red-500"
+              className="text-red-500 hover:text-red-400"
             >
               Delete
             </button>
@@ -141,5 +171,6 @@ export default function Dashboard() {
       </div>
 
     </div>
-  );
+  </div>
+);
 }
