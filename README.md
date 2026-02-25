@@ -1,119 +1,119 @@
-Smart Bookmark App
-🚀 Overview
+# 🚀 Smart Bookmark App
 
+## 📌 Overview
 Smart Bookmark App is a full-stack web application that allows users to securely store and manage personal bookmarks in real-time.
 
-The application supports Google OAuth authentication and ensures strict user-level data privacy using Row Level Security (RLS).
+The application uses Google OAuth authentication and enforces strict user-level data privacy using Row Level Security (RLS).
 
-🛠 Tech Stack
+---
 
-Next.js (App Router)
+## 🛠 Tech Stack
+- Next.js (App Router)
+- React
+- Tailwind CSS
+- Supabase (Auth + PostgreSQL + Realtime)
+- Vercel (Deployment)
 
-React
+---
 
-Tailwind CSS
+## 🔐 Features
+- Google OAuth Login
+- Secure session handling
+- Row Level Security (RLS)
+- Add & Delete bookmarks
+- Real-time updates
+- Responsive modern UI
+- Logout functionality
 
-Supabase (Auth + PostgreSQL + Realtime)
+---
 
-Vercel (Deployment)
+## 🧱 Database Structure
 
-🔐 Features
+**Table: `bookmarks`**
 
-Google OAuth Login
+| Column      | Type        |
+|------------|------------|
+| id         | uuid       |
+| title      | text       |
+| url        | text       |
+| user_id    | uuid       |
+| created_at | timestamp  |
 
-Secure session handling
+---
 
-Row Level Security (RLS)
+## 🔒 Security Implementation
 
-Add & Delete bookmarks
+Row Level Security (RLS) is enabled on the `bookmarks` table.
 
-Real-time updates
-
-Responsive modern UI
-
-Logout functionality
-
-🧱 Database Structure
-
-Table: bookmarks
-
-Columns:
-
-id (uuid)
-
-title (text)
-
-url (text)
-
-user_id (uuid)
-
-created_at (timestamp)
-
-🔒 Security Implementation
-
-Row Level Security was enabled on the bookmarks table.
-
-Policies were created to ensure:
-
-Users can insert bookmarks only if auth.uid() = user_id
-
-Users can select only their own bookmarks
-
-Users can delete only their own bookmarks
+Policies ensure:
+- Users can insert bookmarks only if `auth.uid() = user_id`
+- Users can select only their own bookmarks
+- Users can delete only their own bookmarks
 
 This ensures database-level protection, not just frontend-level validation.
 
-⚡ Real-Time Implementation
+---
 
-Supabase Realtime was used with postgres_changes subscription.
+## ⚡ Real-Time Implementation
 
-The UI automatically updates whenever a bookmark is inserted or deleted without requiring a manual refresh.
+Supabase Realtime was implemented using `postgres_changes` subscription.
 
-🧩 Challenges Faced & Solutions
-1️⃣ OAuth Redirect Issues
+Whenever a bookmark is added or deleted:
+- The UI updates automatically
+- No manual refresh is required
+- React state updates instantly for better UX
 
-Problem: After login, the app redirected incorrectly.
-Solution: Updated Site URL and Redirect URLs in Supabase Auth settings.
+---
 
-2️⃣ RLS Blocking Inserts
+## 🧩 Challenges Faced & Solutions
 
-Problem: Insert operations failed due to missing policy.
-Solution: Added INSERT policy with auth.uid() = user_id condition.
+### 1️⃣ OAuth Redirect Issue
+**Problem:** After login, the app redirected incorrectly.  
+**Solution:** Updated Site URL and Redirect URLs in Supabase Authentication settings.
 
-3️⃣ State Not Updating Instantly
+### 2️⃣ RLS Blocking Insert
+**Problem:** Insert operation failed due to missing policy.  
+**Solution:** Added INSERT policy with condition `auth.uid() = user_id`.
 
-Problem: UI required manual refresh.
-Solution: Implemented realtime subscription and immediate state updates.
+### 3️⃣ UI Not Updating Instantly
+**Problem:** Page required manual refresh after adding bookmark.  
+**Solution:** Implemented realtime subscription and state updates.
 
-🖥 Local Setup
+---
 
-Clone the repository
+## 🖥 Local Setup
 
-Install dependencies
+```bash
+cd smart-bookmark-app
 npm install
+```
 
-Create .env.local file
-Add:
-NEXT_PUBLIC_SUPABASE_URL=your_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
+Create a `.env.local` file:
 
-Run:
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+```
+
+Run the project:
+
+```bash
 npm run dev
+```
 
-🌍 Deployment
+---
 
-Deployed using Vercel.
+## 🌍 Deployment
 
-Environment variables were configured in Vercel project settings.
+The application is deployed using Vercel.
 
-📚 What I Learned
+Environment variables are configured in Vercel Project Settings.
 
-Implementing OAuth authentication
+---
 
-Database-level security using RLS
-
-Real-time app architecture
-
-Full-stack integration
-
-Debugging authentication flows
+## 📚 What I Learned
+- Implementing OAuth authentication
+- Database security using Row Level Security
+- Real-time web application design
+- Debugging authentication flows
+- Full-stack project structuring
