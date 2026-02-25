@@ -1,36 +1,119 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Smart Bookmark App
+🚀 Overview
 
-## Getting Started
+Smart Bookmark App is a full-stack web application that allows users to securely store and manage personal bookmarks in real-time.
 
-First, run the development server:
+The application supports Google OAuth authentication and ensures strict user-level data privacy using Row Level Security (RLS).
 
-```bash
+🛠 Tech Stack
+
+Next.js (App Router)
+
+React
+
+Tailwind CSS
+
+Supabase (Auth + PostgreSQL + Realtime)
+
+Vercel (Deployment)
+
+🔐 Features
+
+Google OAuth Login
+
+Secure session handling
+
+Row Level Security (RLS)
+
+Add & Delete bookmarks
+
+Real-time updates
+
+Responsive modern UI
+
+Logout functionality
+
+🧱 Database Structure
+
+Table: bookmarks
+
+Columns:
+
+id (uuid)
+
+title (text)
+
+url (text)
+
+user_id (uuid)
+
+created_at (timestamp)
+
+🔒 Security Implementation
+
+Row Level Security was enabled on the bookmarks table.
+
+Policies were created to ensure:
+
+Users can insert bookmarks only if auth.uid() = user_id
+
+Users can select only their own bookmarks
+
+Users can delete only their own bookmarks
+
+This ensures database-level protection, not just frontend-level validation.
+
+⚡ Real-Time Implementation
+
+Supabase Realtime was used with postgres_changes subscription.
+
+The UI automatically updates whenever a bookmark is inserted or deleted without requiring a manual refresh.
+
+🧩 Challenges Faced & Solutions
+1️⃣ OAuth Redirect Issues
+
+Problem: After login, the app redirected incorrectly.
+Solution: Updated Site URL and Redirect URLs in Supabase Auth settings.
+
+2️⃣ RLS Blocking Inserts
+
+Problem: Insert operations failed due to missing policy.
+Solution: Added INSERT policy with auth.uid() = user_id condition.
+
+3️⃣ State Not Updating Instantly
+
+Problem: UI required manual refresh.
+Solution: Implemented realtime subscription and immediate state updates.
+
+🖥 Local Setup
+
+Clone the repository
+
+Install dependencies
+npm install
+
+Create .env.local file
+Add:
+NEXT_PUBLIC_SUPABASE_URL=your_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
+
+Run:
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+🌍 Deployment
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Deployed using Vercel.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Environment variables were configured in Vercel project settings.
 
-## Learn More
+📚 What I Learned
 
-To learn more about Next.js, take a look at the following resources:
+Implementing OAuth authentication
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Database-level security using RLS
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Real-time app architecture
 
-## Deploy on Vercel
+Full-stack integration
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Debugging authentication flows
